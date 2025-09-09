@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ice Cream Parlor Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff7f9;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(90deg, #ff89a0, #ffb347);
+      padding: 20px;
+      text-align: center;
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 15px;
+      background: #ffe4e9;
+    }
+    nav a {
+      text-decoration: none;
+      color: #444;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #ff6f91;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+    .card h3 {
+      margin: 10px 0;
+      color: #ff6f91;
+    }
+    .sales {
+      padding: 20px;
+      margin: 20px;
+      background: #fff0f6;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    .btn {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 20px;
+      background: #ff6f91;
+      color: white;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #ff3f6c;
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #ffe4e9;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>🍨 Ice Cream Parlor Dashboard</header>
+
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Menu</a>
+    <a href="#">Orders</a>
+    <a href="#">Analytics</a>
+  </nav>
+
+  <section class="container">
+    <div class="card">
+      <img src="https://i.ibb.co/0qzxJ7L/vanilla.jpg" alt="Vanilla">
+      <h3>Vanilla</h3>
+      <p>Classic & creamy</p>
+      <button class="btn" onclick="order('Vanilla')">Order</button>
+    </div>
+    <div class="card">
+      <img src="https://i.ibb.co/HPjzKfd/chocolate.jpg" alt="Chocolate">
+      <h3>Chocolate</h3>
+      <p>Rich & smooth</p>
+      <button class="btn" onclick="order('Chocolate')">Order</button>
+    </div>
+    <div class="card">
+      <img src="https://i.ibb.co/18rkMKH/strawberry.jpg" alt="Strawberry">
+      <h3>Strawberry</h3>
+      <p>Fresh & sweet</p>
+      <button class="btn" onclick="order('Strawberry')">Order</button>
+    </div>
+    <div class="card">
+      <img src="https://i.ibb.co/YtCRb0r/mango.jpg" alt="Mango">
+      <h3>Mango</h3>
+      <p>Tropical delight</p>
+      <button class="btn" onclick="order('Mango')">Order</button>
+    </div>
+  </section>
+
+  <section class="sales">
+    <h2>📊 Sales Analytics</h2>
+    <p>Total Orders Today: <span id="orderCount">0</span></p>
+    <p>Most Popular Flavor: <span id="topFlavor">N/A</span></p>
+  </section>
+
+  <footer>
+    © 2025 Ice Cream Parlor | All Rights Reserved
+  </footer>
+
+  <script>
+    let orderCount = 0;
+    let flavors = { "Vanilla": 0, "Chocolate": 0, "Strawberry": 0, "Mango": 0 };
+
+    function order(flavor) {
+      orderCount++;
+      flavors[flavor]++;
+      document.getElementById("orderCount").innerText = orderCount;
+
+      let topFlavor = Object.keys(flavors).reduce((a, b) => flavors[a] > flavors[b] ? a : b);
+      document.getElementById("topFlavor").innerText = topFlavor;
+
+      alert("You ordered: " + flavor + " 🍦");
+    }
+  </script>
+</body>
+</html>
