@@ -1,156 +1,448 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Ice Cream Parlor Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Creative Studio Dashboard — 3D • VFX • Photo • Video</title>
+  <!-- Single-file app: HTML + CSS + JS in one -->
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #fff7f9;
-      color: #333;
+    :root{
+      --bg: #0f1220;        /* dark base */
+      --panel: #171b2e;     /* card */
+      --muted: #99a1c2;     /* text secondary */
+      --text: #e8ebff;      /* text */
+      --brand: #7c5cff;     /* accent */
+      --brand-2:#35d0ff;    /* accent 2 */
+      --ok: #23d18b;
+      --warn:#ffb020;
+      --bad: #ff5d7a;
+      --chip:#222743;
+      --border: #2a3156;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
     }
-    header {
-      background: linear-gradient(90deg, #ff89a0, #ffb347);
-      padding: 20px;
-      text-align: center;
-      color: white;
-      font-size: 28px;
-      font-weight: bold;
+    /* Light mode vars (applied when body:not(.dark)) */
+    body:not(.dark){
+      --bg:#f7f8ff; --panel:#ffffff; --muted:#64709a; --text:#161a33; --brand:#6b4bff; --brand-2:#00b7ff; --chip:#eef1ff; --border:#e7e9f7; --shadow: 0 8px 24px rgba(21,34,77,.08)
     }
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 15px;
-      background: #ffe4e9;
+
+    * { box-sizing: border-box }
+    html,body{ height:100% }
+    body{
+      margin:0; background:var(--bg); color:var(--text); font: 15px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
-    nav a {
-      text-decoration: none;
-      color: #444;
-      font-weight: bold;
-    }
-    nav a:hover {
-      color: #ff6f91;
-    }
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      padding: 20px;
-    }
-    .card {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-    }
-    .card img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 50%;
-      margin-bottom: 10px;
-    }
-    .card h3 {
-      margin: 10px 0;
-      color: #ff6f91;
-    }
-    .sales {
-      padding: 20px;
-      margin: 20px;
-      background: #fff0f6;
-      border-radius: 15px;
-      text-align: center;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    }
-    .btn {
-      margin-top: 10px;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 20px;
-      background: #ff6f91;
-      color: white;
-      cursor: pointer;
-    }
-    .btn:hover {
-      background: #ff3f6c;
-    }
-    footer {
-      text-align: center;
-      padding: 15px;
-      background: #ffe4e9;
-      margin-top: 20px;
-      font-size: 14px;
-    }
+    a{ color:inherit; text-decoration:none }
+    button{ font:inherit }
+
+    /* Layout */
+    .app{ display:grid; grid-template-columns: 260px 1fr; min-height:100vh }
+    .sidebar{ position:sticky; top:0; height:100vh; padding:20px; background: linear-gradient(180deg, #0e1122, #0b0f1d 60%, transparent), var(--bg); border-right:1px solid var(--border) }
+    .logo{ display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.3px; }
+    .logo .badge{ display:grid; place-items:center; width:36px; height:36px; border-radius:10px; background: linear-gradient(135deg, var(--brand), var(--brand-2)); box-shadow: var(--shadow) }
+
+    .nav{ margin-top:22px }
+    .nav h5{ margin:18px 10px 10px; color:var(--muted); font-size:12px; letter-spacing:.6px; text-transform:uppercase }
+    .nav a{ display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px; color:var(--muted) }
+    .nav a .dot{ width:8px; height:8px; border-radius:99px; background:var(--chip) }
+    .nav a:hover{ background:var(--chip); color:var(--text) }
+    .nav a.active{ background: linear-gradient(90deg, rgba(124,92,255,.2), rgba(53,208,255,.12)); color:var(--text); border:1px solid rgba(124,92,255,.35) }
+
+    .sidebar .footer{ position:absolute; left:0; right:0; bottom:0; padding:16px 20px; border-top:1px dashed var(--border); color:var(--muted); font-size:12px }
+
+    .main{ display:grid; grid-template-rows: auto 1fr auto; min-height:100vh }
+    .topbar{ display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid var(--border); backdrop-filter:saturate(120%) blur(6px); position:sticky; top:0; z-index:5; background: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,0)) }
+    .search{ flex:1; position:relative }
+    .search input{ width:100%; padding:12px 14px 12px 38px; border-radius:12px; border:1px solid var(--border); background:var(--panel); color:var(--text) }
+    .search .icon{ position:absolute; left:12px; top:10px; font-size:18px; color:var(--muted) }
+
+    .btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border:1px solid var(--border); border-radius:12px; background:var(--panel); color:var(--text); cursor:pointer }
+    .btn.primary{ background: linear-gradient(135deg, var(--brand), var(--brand-2)); border:none; color:white; box-shadow: var(--shadow) }
+    .btn.ghost{ background:transparent }
+
+    .content{ padding:20px; display:grid; gap:20px }
+
+    /* KPI cards */
+    .kpis{ display:grid; grid-template-columns: repeat(4, minmax(180px,1fr)); gap:16px }
+    .card{ background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow: var(--shadow) }
+    .card h3{ margin:0 0 4px; font-size:13px; color:var(--muted); font-weight:600; letter-spacing:.2px }
+    .card .value{ font-size:26px; font-weight:800; display:flex; align-items:baseline; gap:8px }
+    .chip{ display:inline-flex; align-items:center; gap:6px; padding:4px 8px; background:var(--chip); border-radius:999px; font-size:12px; color:var(--muted) }
+    .chip.ok{ color:var(--ok) }
+    .chip.warn{ color:var(--warn) }
+    .chip.bad{ color:var(--bad) }
+
+    /* Grid: charts + table */
+    .grid{ display:grid; grid-template-columns: 1.1fr .9fr; gap:16px }
+    .panel{ background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow: var(--shadow) }
+    .panel h2{ margin:0 0 12px; font-size:16px }
+
+    .chart-wrap{ display:grid; gap:14px }
+    canvas{ width:100%; height:260px; max-height:300px }
+
+    /* Projects table */
+    table{ width:100%; border-collapse:collapse; font-size:14px }
+    th, td{ text-align:left; padding:10px 8px; border-bottom:1px dashed var(--border) }
+    th{ color:var(--muted); font-weight:600 }
+    .progress{ height:8px; background:var(--chip); border-radius:99px; overflow:hidden }
+    .progress > i{ display:block; height:100%; background:linear-gradient(90deg, var(--brand), var(--brand-2)) }
+    .tag{ padding:4px 8px; border-radius:8px; background:var(--chip); color:var(--text); font-size:12px }
+
+    /* Upload */
+    .uploader{ border:2px dashed var(--border); border-radius:16px; padding:22px; text-align:center; background: repeating-linear-gradient(45deg, rgba(124,92,255,.06), rgba(124,92,255,.06) 10px, transparent 10px, transparent 20px) }
+    .uploader.drag{ border-color: var(--brand) }
+    .filelist{ display:grid; gap:10px; margin-top:12px; max-height:160px; overflow:auto }
+    .fileitem{ display:flex; align-items:center; gap:10px; padding:8px 10px; background:var(--chip); border-radius:12px; font-size:13px }
+
+    /* Tasks (Kanban-lite) */
+    .kanban{ display:grid; grid-template-columns: repeat(3, 1fr); gap:12px }
+    .col{ background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:12px; min-height:180px }
+    .col h4{ margin:0 0 8px; font-size:14px; color:var(--muted) }
+    .task{ background: var(--chip); border-radius:12px; padding:10px; margin:6px 0; cursor:grab }
+    .task small{ color:var(--muted) }
+
+    .footerbar{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:14px 20px; border-top:1px solid var(--border); color:var(--muted); font-size:13px }
+
+    /* Responsive */
+    @media (max-width: 1100px){ .grid{ grid-template-columns: 1fr } }
+    @media (max-width: 900px){ .kpis{ grid-template-columns: repeat(2, 1fr) } .app{ grid-template-columns: 1fr } .sidebar{ position:static; height:auto } }
+    @media (max-width: 560px){ .kpis{ grid-template-columns: 1fr } .topbar{ flex-wrap:wrap } }
   </style>
 </head>
-<body>
-  <header>🍨 Ice Cream Parlor Dashboard</header>
+<body class="dark">
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo"><span class="badge">🎬</span> <span>Creative Studio</span></div>
+      <nav class="nav">
+        <h5>Sections</h5>
+        <a class="active" href="#overview"><span class="dot"></span>Overview</a>
+        <a href="#3d"><span class="dot"></span>3D</a>
+        <a href="#vfx"><span class="dot"></span>VFX</a>
+        <a href="#photo"><span class="dot"></span>Photo Editing</a>
+        <a href="#video"><span class="dot"></span>Video Editing</a>
+        <a href="#assets"><span class="dot"></span>Assets</a>
+        <a href="#tasks"><span class="dot"></span>Tasks</a>
+        <h5>Quick</h5>
+        <a id="toggle-theme" href="#"><span class="dot"></span>Toggle Dark / Light</a>
+      </nav>
+      <div class="footer">© <span id="yr"></span> Studio Dashboard</div>
+    </aside>
 
-  <nav>
-    <a href="#">Home</a>
-    <a href="#">Menu</a>
-    <a href="#">Orders</a>
-    <a href="#">Analytics</a>
-  </nav>
+    <!-- Main area -->
+    <main class="main">
+      <div class="topbar">
+        <div class="search">
+          <span class="icon">🔎</span>
+          <input id="searchInput" placeholder="Search projects, tasks, assets…" />
+        </div>
+        <button class="btn" id="newProjectBtn">➕ New Project</button>
+        <button class="btn primary" id="renderAll">⚡ Render Queue</button>
+      </div>
 
-  <section class="container">
-    <div class="card">
-      <img src="https://i.ibb.co/0qzxJ7L/vanilla.jpg" alt="Vanilla">
-      <h3>Vanilla</h3>
-      <p>Classic & creamy</p>
-      <button class="btn" onclick="order('Vanilla')">Order</button>
-    </div>
-    <div class="card">
-      <img src="https://i.ibb.co/HPjzKfd/chocolate.jpg" alt="Chocolate">
-      <h3>Chocolate</h3>
-      <p>Rich & smooth</p>
-      <button class="btn" onclick="order('Chocolate')">Order</button>
-    </div>
-    <div class="card">
-      <img src="https://i.ibb.co/18rkMKH/strawberry.jpg" alt="Strawberry">
-      <h3>Strawberry</h3>
-      <p>Fresh & sweet</p>
-      <button class="btn" onclick="order('Strawberry')">Order</button>
-    </div>
-    <div class="card">
-      <img src="https://i.ibb.co/YtCRb0r/mango.jpg" alt="Mango">
-      <h3>Mango</h3>
-      <p>Tropical delight</p>
-      <button class="btn" onclick="order('Mango')">Order</button>
-    </div>
-  </section>
+      <section class="content" id="overview">
+        <!-- KPIs -->
+        <div class="kpis">
+          <div class="card">
+            <h3>Active Projects</h3>
+            <div class="value"><span id="kpiProjects">8</span><span class="chip ok">▲ 12%</span></div>
+          </div>
+          <div class="card">
+            <h3>Render Queue</h3>
+            <div class="value"><span id="kpiRender">3</span><span class="chip warn">● queue</span></div>
+          </div>
+          <div class="card">
+            <h3>Storage Used</h3>
+            <div class="value"><span id="kpiStorage">1.9 TB</span><span class="chip">/ 4 TB</span></div>
+          </div>
+          <div class="card">
+            <h3>Upcoming Deadlines</h3>
+            <div class="value"><span id="kpiDeadlines">4</span><span class="chip bad">! this week</span></div>
+          </div>
+        </div>
 
-  <section class="sales">
-    <h2>📊 Sales Analytics</h2>
-    <p>Total Orders Today: <span id="orderCount">0</span></p>
-    <p>Most Popular Flavor: <span id="topFlavor">N/A</span></p>
-  </section>
+        <div class="grid">
+          <!-- Charts Panel -->
+          <section class="panel chart-wrap">
+            <h2>Production Overview</h2>
+            <div class="card" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div>
+                <canvas id="chartBar" height="260"></canvas>
+                <div class="muted" style="color:var(--muted); font-size:12px; text-align:center; margin-top:6px">Weekly Hours (3D / VFX / Photo / Video)</div>
+              </div>
+              <div>
+                <canvas id="chartDonut" height="260"></canvas>
+                <div class="muted" style="color:var(--muted); font-size:12px; text-align:center; margin-top:6px">Project Mix</div>
+              </div>
+            </div>
+          </section>
 
-  <footer>
-    © 2025 Ice Cream Parlor | All Rights Reserved
-  </footer>
+          <!-- Projects Table -->
+          <section class="panel">
+            <h2>Projects</h2>
+            <table id="projectsTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Progress</th>
+                  <th>Due</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- rows injected by JS -->
+              </tbody>
+            </table>
+          </section>
+        </div>
+
+        <!-- Assets / Upload -->
+        <section class="panel" id="assets">
+          <h2>Assets</h2>
+          <div id="drop" class="uploader">
+            <div>📦 Drag & drop files here or <button class="btn" id="browseBtn" type="button">Browse</button></div>
+            <input id="fileInput" type="file" multiple style="display:none" />
+            <div class="filelist" id="fileList"></div>
+          </div>
+        </section>
+
+        <!-- Tasks / Kanban -->
+        <section class="panel" id="tasks">
+          <h2>Tasks</h2>
+          <div class="kanban" id="kanban">
+            <div class="col" data-col="todo">
+              <h4>To Do</h4>
+              <div class="task" draggable="true">Blockout city mesh <small>· 3D</small></div>
+              <div class="task" draggable="true">Roto foreground actor <small>· VFX</small></div>
+              <div class="task" draggable="true">Color match reference <small>· Photo</small></div>
+            </div>
+            <div class="col" data-col="doing">
+              <h4>In Progress</h4>
+              <div class="task" draggable="true">Sim dust particles <small>· VFX</small></div>
+              <div class="task" draggable="true">Assemble timeline v2 <small>· Video</small></div>
+            </div>
+            <div class="col" data-col="done">
+              <h4>Done</h4>
+              <div class="task" draggable="true">UV unwrap props <small>· 3D</small></div>
+            </div>
+          </div>
+          <div style="margin-top:10px; display:flex; gap:8px">
+            <input id="newTaskTxt" placeholder="New task…" style="flex:1; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--panel); color:var(--text)"/>
+            <select id="newTaskCol" class="btn" style="padding:10px 10px">
+              <option value="todo">To Do</option>
+              <option value="doing">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+            <button class="btn primary" id="addTask">Add Task</button>
+          </div>
+        </section>
+      </section>
+
+      <div class="footerbar">
+        <div>Tip: Hit <b>/</b> to focus search · Drop files anywhere to add assets</div>
+        <div id="clock">--:--</div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Minimal modal for New Project -->
+  <dialog id="projectModal" style="border:none; border-radius:16px; padding:0; background:var(--panel); color:var(--text); width:min(520px, 92vw); box-shadow: var(--shadow);">
+    <form method="dialog" style="padding:16px;">
+      <h3 style="margin:0 0 12px">New Project</h3>
+      <div style="display:grid; gap:10px">
+        <input id="pName" placeholder="Project name" style="padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--chip); color:var(--text)">
+        <select id="pType" style="padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--chip); color:var(--text)">
+          <option>3D</option><option>VFX</option><option>Photo</option><option>Video</option>
+        </select>
+        <input id="pDue" type="date" style="padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--chip); color:var(--text)">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px">
+        <button class="btn ghost" value="cancel">Cancel</button>
+        <button id="createProject" class="btn primary" value="default">Create</button>
+      </div>
+    </form>
+  </dialog>
 
   <script>
-    let orderCount = 0;
-    let flavors = { "Vanilla": 0, "Chocolate": 0, "Strawberry": 0, "Mango": 0 };
+    // ----------------------------- Helpers & Data
+    const $ = (sel, ctx=document)=>ctx.querySelector(sel);
+    const $$ = (sel, ctx=document)=>Array.from(ctx.querySelectorAll(sel));
+    const state = {
+      projects: [
+        {name:'City Flythrough', type:'3D', status:'Blocking', progress:35, due:'2025-09-15'},
+        {name:'Desert Sandstorm', type:'VFX', status:'Simulating', progress:55, due:'2025-09-18'},
+        {name:'Brand Photoset', type:'Photo', status:'Color', progress:70, due:'2025-09-12'},
+        {name:'Trailer Cut v2', type:'Video', status:'Editing', progress:45, due:'2025-09-20'},
+        {name:'Creature Sculpt', type:'3D', status:'Detailing', progress:60, due:'2025-09-25'},
+        {name:'Clean Plate Roto', type:'VFX', status:'Roto', progress:20, due:'2025-09-13'}
+      ],
+      weeklyHours: { labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], series:[
+        {label:'3D', values:[6,7,5,8,6,3,2]},
+        {label:'VFX', values:[4,5,6,7,5,2,1]},
+        {label:'Photo', values:[2,2,3,2,4,5,2]},
+        {label:'Video', values:[3,4,4,3,6,4,2]},
+      ]},
+    };
 
-    function order(flavor) {
-      orderCount++;
-      flavors[flavor]++;
-      document.getElementById("orderCount").innerText = orderCount;
+    // -------------------------------- Theme toggle & clock
+    const yr = new Date().getFullYear(); $('#yr').textContent = yr;
+    function tick(){ const d=new Date(); $('#clock').textContent = d.toLocaleTimeString(); requestAnimationFrame(()=>setTimeout(tick, 1000)); }
+    tick();
+    $('#toggle-theme').addEventListener('click', (e)=>{ e.preventDefault(); document.body.classList.toggle('dark'); localStorage.setItem('theme', document.body.classList.contains('dark')?'dark':'light'); });
+    (function(){ const t=localStorage.getItem('theme'); if(t==='light') document.body.classList.remove('dark'); })();
 
-      let topFlavor = Object.keys(flavors).reduce((a, b) => flavors[a] > flavors[b] ? a : b);
-      document.getElementById("topFlavor").innerText = topFlavor;
+    // -------------------------------- Search (filters projects)
+    const searchInput = $('#searchInput');
+    searchInput.addEventListener('keydown', (e)=>{ if(e.key==='/'){ e.preventDefault(); searchInput.focus(); } });
+    searchInput.addEventListener('input', renderTable);
 
-      alert("You ordered: " + flavor + " 🍦");
+    // -------------------------------- Modal for new project
+    const modal = $('#projectModal');
+    $('#newProjectBtn').addEventListener('click', ()=>{ modal.showModal(); $('#pName').focus(); });
+    $('#createProject').addEventListener('click', (e)=>{
+      e.preventDefault();
+      const name = $('#pName').value.trim();
+      const type = $('#pType').value; const due = $('#pDue').value || new Date().toISOString().slice(0,10);
+      if(!name){ $('#pName').focus(); return; }
+      state.projects.unshift({ name, type, status:'New', progress:0, due });
+      modal.close(); renderTable(); drawDonut(); updateKPIs();
+      $('#pName').value='';
+    });
+
+    // -------------------------------- Projects table rendering
+    function renderTable(){
+      const q = searchInput.value.toLowerCase();
+      const tbody = $('#projectsTable tbody');
+      tbody.innerHTML = '';
+      state.projects.filter(p=> Object.values(p).join(' ').toLowerCase().includes(q)).forEach(p=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.name}</td>
+          <td><span class="tag">${p.type}</span></td>
+          <td>${p.status}</td>
+          <td><div class="progress"><i style="width:${p.progress}%"></i></div></td>
+          <td>${p.due}</td>
+          <td style="text-align:right">
+            <button class="btn" data-action="bump">▶︎</button>
+            <button class="btn" data-action="done">✓</button>
+          </td>`;
+        tr.querySelector('[data-action="bump"]').addEventListener('click', ()=>{
+          p.progress = Math.min(100, p.progress + 10);
+          p.status = p.progress>=100? 'Complete' : 'In Progress';
+          renderTable(); updateKPIs();
+        });
+        tr.querySelector('[data-action="done"]').addEventListener('click', ()=>{
+          p.progress = 100; p.status = 'Complete'; renderTable(); updateKPIs();
+        });
+        tbody.appendChild(tr);
+      });
     }
+
+    // -------------------------------- Charts (tiny vanilla renderers)
+    function drawBar(){
+      const c = document.getElementById('chartBar'); const ctx = c.getContext('2d');
+      const W = c.width = c.offsetWidth * devicePixelRatio; const H = c.height = 260 * devicePixelRatio; ctx.scale(devicePixelRatio, devicePixelRatio);
+      ctx.clearRect(0,0,W,H);
+      const padding = 28; const innerW = c.offsetWidth - padding*2; const innerH = 220;
+      const labels = state.weeklyHours.labels; const series = state.weeklyHours.series;
+      const totals = labels.map((_,i)=> series.reduce((s,v)=> s+v.values[i],0));
+      const max = Math.max(10, Math.max(...totals));
+      // grid
+      ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--border'); ctx.lineWidth=1; ctx.setLineDash([4,6]);
+      for(let y=0;y<=4;y++){ const yy = padding + innerH - (innerH*y/4); ctx.beginPath(); ctx.moveTo(padding, yy); ctx.lineTo(padding+innerW, yy); ctx.stroke(); }
+      ctx.setLineDash([]);
+      // stacked bars
+      const barW = innerW / labels.length * .7; const gap = innerW / labels.length * .3;
+      labels.forEach((lab,i)=>{
+        let x = padding + i*(barW+gap);
+        let y = padding + innerH;
+        series.forEach((s,si)=>{
+          const h = (s.values[i]/max)*innerH;
+          ctx.fillStyle = [
+            'rgba(124,92,255,.9)', 'rgba(53,208,255,.9)', 'rgba(35,209,139,.9)', 'rgba(255,176,32,.9)'
+          ][si];
+          ctx.fillRect(x, y-h, barW, h); y -= h;
+        });
+        // label
+        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--muted');
+        ctx.textAlign='center'; ctx.font='12px Inter, sans-serif';
+        ctx.fillText(lab, x+barW/2, padding+innerH+14);
+      });
+    }
+
+    function drawDonut(){
+      const c = document.getElementById('chartDonut'); const ctx = c.getContext('2d');
+      const W = c.width = c.offsetWidth * devicePixelRatio; const H = c.height = 260 * devicePixelRatio; ctx.scale(devicePixelRatio, devicePixelRatio);
+      ctx.clearRect(0,0,W,H);
+      const r = Math.min(c.offsetWidth, 240)/2 - 8; const cx = c.offsetWidth/2; const cy = 130;
+      const counts = { '3D':0, 'VFX':0, 'Photo':0, 'Video':0 };
+      state.projects.forEach(p=> counts[p.type]++);
+      const entries = Object.entries(counts); const total = entries.reduce((s,[_k,v])=>s+v,0)||1;
+      let start = -Math.PI/2;
+      entries.forEach(([k,v],i)=>{
+        const slice = (v/total)*Math.PI*2; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,start+slice); ctx.closePath();
+        ctx.fillStyle = [
+          'rgba(124,92,255,.9)', 'rgba(53,208,255,.9)', 'rgba(35,209,139,.9)', 'rgba(255,176,32,.9)'
+        ][i]; ctx.fill(); start += slice;
+      });
+      // hole
+      ctx.globalCompositeOperation='destination-out'; ctx.beginPath(); ctx.arc(cx,cy,r*0.55,0,Math.PI*2); ctx.fill(); ctx.globalCompositeOperation='source-over';
+      // legend
+      const legend = entries.map(([k,v],i)=>`<span class="chip" style="display:inline-flex; align-items:center; gap:8px"><i style="width:10px; height:10px; display:inline-block; background:${['rgba(124,92,255,.9)','rgba(53,208,255,.9)','rgba(35,209,139,.9)','rgba(255,176,32,.9)'][i]}; border-radius:2px"></i>${k} • ${v}</span>`).join(' ');
+      c.insertAdjacentHTML('afterend', `<div class="legend" style="text-align:center">${legend}</div>`);
+      // cleanup existing legends
+      $$('.legend').slice(0,-1).forEach(el=>el.remove());
+    }
+
+    window.addEventListener('resize', ()=>{ drawBar(); drawDonut(); });
+
+    // -------------------------------- Uploader
+    const drop = $('#drop'); const fileInput = $('#fileInput'); const fileList = $('#fileList');
+    $('#browseBtn').addEventListener('click', ()=> fileInput.click());
+    ['dragenter','dragover'].forEach(ev=> drop.addEventListener(ev, (e)=>{ e.preventDefault(); drop.classList.add('drag'); }));
+    ;['dragleave','drop'].forEach(ev=> drop.addEventListener(ev, (e)=>{ e.preventDefault(); drop.classList.remove('drag'); }));
+    drop.addEventListener('drop', e=>{ addFiles(e.dataTransfer.files); });
+    fileInput.addEventListener('change', e=> addFiles(e.target.files));
+    function addFiles(files){
+      [...files].forEach(f=>{
+        const item = document.createElement('div'); item.className='fileitem';
+        item.innerHTML = `📄 <b>${f.name}</b> <span style="margin-left:auto"></span> ${(f.size/1024/1024).toFixed(2)} MB`;
+        fileList.prepend(item);
+      });
+    }
+
+    // -------------------------------- Kanban drag & add
+    const cols = $$('#tasks .col');
+    cols.forEach(col=>{
+      col.addEventListener('dragover', e=> e.preventDefault());
+      col.addEventListener('drop', e=>{ const id = e.dataTransfer.getData('text/plain'); const node = document.getElementById(id); col.appendChild(node); });
+    });
+    $$('#tasks .task').forEach((t,i)=> enableDrag(t,i));
+    function enableDrag(node, i){ node.id = node.id || ('task_'+(Date.now()+i)); node.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', node.id); }); }
+    $('#addTask').addEventListener('click', ()=>{
+      const txt = $('#newTaskTxt').value.trim(); if(!txt) return;
+      const col = $('#tasks .col[data-col="'+$('#newTaskCol').value+'"]');
+      const n = document.createElement('div'); n.className='task'; n.draggable=true; n.textContent = txt; n.innerHTML += ' <small>· custom</small>';
+      enableDrag(n, Math.floor(Math.random()*1e3)); col.appendChild(n); $('#newTaskTxt').value='';
+    });
+
+    // -------------------------------- Render queue action (demo)
+    $('#renderAll').addEventListener('click', ()=>{
+      const queued = state.projects.filter(p=> p.progress<100).slice(0,3);
+      alert(`Queued ${queued.length} project(s) for render: \n- ` + queued.map(p=>p.name).join('\n- '));
+      $('#kpiRender').textContent = Math.max(0, parseInt($('#kpiRender').textContent,10) - 1);
+    });
+
+    // -------------------------------- KPIs from projects
+    function updateKPIs(){
+      $('#kpiProjects').textContent = state.projects.length;
+      const deadlines = state.projects.filter(p=> daysUntil(p.due) <= 7).length; $('#kpiDeadlines').textContent = deadlines;
+    }
+    function daysUntil(dateStr){ const d=new Date(dateStr), now=new Date(); return Math.ceil((d-now)/86400000); }
+
+    // Init
+    renderTable(); drawBar(); drawDonut(); updateKPIs();
   </script>
 </body>
 </html>
+
